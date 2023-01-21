@@ -20,6 +20,7 @@ The run all the modules like the below line:
 SandbusterKickStarter(lpwProcName, NULL);
 ```
 
+Function `void SandbusterKickStarter(LPCSTR lpProcName, LPCSTR OnlineCheck)` can be modified to only contain the neccessary modules. You can also remove the strings.
 ## Capabilities
 
 __Sandboxes:__
