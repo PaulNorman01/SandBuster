@@ -113,7 +113,7 @@ HANDLE ProcessHandle(LPCSTR lpwProcName)
 
 //get external module handle
 BOOL GetModuleHandleExternal(HANDLE hProcess, LPCSTR hModuleName)
-{
+{ 
 	DWORD cbNeeded, cProcesses;
 	HMODULE hMods[64];
 
@@ -130,10 +130,10 @@ BOOL GetModuleHandleExternal(HANDLE hProcess, LPCSTR hModuleName)
 
 			if (test)
 				return TRUE;
-			//printf("\n>>>>>>>> FOUND IT!!!!!! \n");
-			//exit(-1);
-		//else
-			//printf("\n>>>>>Nothing.....\n");
+				//printf("\n>>>>>>>> FOUND IT!!!!!! \n");
+				//exit(-1);
+			//else
+				//printf("\n>>>>>Nothing.....\n");
 		}
 		return FALSE;
 	}
@@ -172,14 +172,14 @@ void* pGetFunctionHandle(char* MyNtdllFunction, PVOID MyDLLBaseAddress)
 		uintptr_t* TrueAddress = (uintptr_t*)(moduleBase + RVA);
 		return (PVOID)TrueAddress;
 	}
-	else
+	else 
 		return (PVOID)RVA;
 }
 
 
 
 
-void* FindDllThroughBase(wchar_t* DllName)
+void* FindDllThroughBase(wchar_t* DllName) 
 {
 	PLDR_DATA_TABLE_ENTRY pDataTableEntry = 0;
 	PVOID DLLAddress = 0;
@@ -188,7 +188,7 @@ void* FindDllThroughBase(wchar_t* DllName)
 
 	//64bit
 	PPEB pPEB = (PPEB)__readgsqword(0x60);
-
+	
 
 	// 32bit
 	//PPEB pPEB = (PPEB)__readfsword(0x60);
@@ -199,23 +199,23 @@ void* FindDllThroughBase(wchar_t* DllName)
 	PLIST_ENTRY AddressFirstPLIST = &pLdr->InMemoryOrderModuleList;
 	PLIST_ENTRY AddressFirstlpNode = AddressFirstPLIST->Flink;
 
-	for (PLIST_ENTRY lpNode = AddressFirstlpNode; lpNode != AddressFirstPLIST; lpNode = lpNode->Flink)
+	for (PLIST_ENTRY lpNode = AddressFirstlpNode; lpNode != AddressFirstPLIST; lpNode = lpNode->Flink) 
 	{
 		lpNode--;
 		pDataTableEntry = (PLDR_DATA_TABLE_ENTRY)lpNode;
 
 		wchar_t* FullDLLName = (wchar_t*)pDataTableEntry->FullDllName.Buffer;
 
-		for (int size = wcslen(FullDLLName), cpt = 0; cpt < size; cpt++)
+		for (int size = wcslen(FullDLLName), cpt = 0; cpt < size; cpt++) 
 			FullDLLName[cpt] = tolower(FullDLLName[cpt]);
-
+		
 		if (wcsstr(FullDLLName, DllName) != NULL)
 		{
 			DLLAddress = (PVOID)pDataTableEntry->DllBase;
 			return DLLAddress;
 		}
 
-		lpNode++;
+		lpNode++; 
 	}
 
 	return DLLAddress;
@@ -231,9 +231,9 @@ BOOL SandboxieDetect()
 
 
 	PVOID DLLaddress = FindDllThroughBase(DllName);
-	if (DLLaddress)
+	if (DLLaddress) 
 		printf("\n\tDLL base address of %ls : %x \n", DllName, DLLaddress);
-	else
+	else 
 		return FALSE;
 
 	PVOID FunctionAddress = pGetFunctionHandle(FunctionNameToSearch, DLLaddress);
@@ -269,7 +269,7 @@ BOOL WMIExec()
 	hr = services->lpVtbl->ExecQuery(services, language, query, WBEM_FLAG_BIDIRECTIONAL, NULL, &results);
 
 
-	if (results != NULL)
+	if (results != NULL) 
 	{
 		IWbemClassObject* result = NULL;
 		ULONG returnedCount = 0;
@@ -302,7 +302,7 @@ BOOL WMIExec()
 	SysFreeString(query);
 	SysFreeString(language);
 	SysFreeString(resource);
-
+	
 	return TRUE;
 }
 
@@ -352,7 +352,7 @@ BOOL CheckMacAddress(const TCHAR* szMac)
 	{
 		free(pAdapterInfo);
 		pAdapterInfo = (PIP_ADAPTER_INFO)malloc(ulOutBufLen);
-		if (pAdapterInfo == NULL)
+		if (pAdapterInfo == NULL) 
 		{
 			printf("MALLOC Failed.\n");
 			return 1;
@@ -364,9 +364,9 @@ BOOL CheckMacAddress(const TCHAR* szMac)
 	if (dwResult == ERROR_SUCCESS)
 	{
 		CHAR szMacMultiBytes[4];
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 4; i++) 
 			szMacMultiBytes[i] = (CHAR)szMac[i];
-
+		
 		pAdapterInfoPtr = pAdapterInfo;
 
 		while (pAdapterInfoPtr)
@@ -390,7 +390,7 @@ BOOL CheckMacAddress(const TCHAR* szMac)
 
 BOOL DetectAltSandbox()
 {
-	LPWSTR DLLNames[] =
+	LPWSTR DLLNames[] = 
 	{
 		L"cmdvrt32.dll",
 		L"cmdvrt64.dll",
@@ -408,12 +408,12 @@ BOOL DetectAltSandbox()
 
 	unsigned int IteratorSize = sizeof(DLLNames) / sizeof(DLLNames[0]);
 	unsigned int Detection = 0;
-
+	
 	for (unsigned int Iterator = 0; Iterator < IteratorSize; Iterator++)
-	{
+	{ 
 		PVOID DLLaddress = FindDllThroughBase(DLLNames[Iterator]);
 
-		if (DLLaddress)
+		if(DLLaddress)
 			Detection++;
 	}
 
@@ -429,7 +429,7 @@ BOOL DetectAltSandbox()
 
 BOOL UserNameCheck()
 {
-	LPSTR names[] =
+	LPSTR names[] = 
 	{
 		L"USER",
 		//test ------------------------
@@ -448,7 +448,7 @@ BOOL UserNameCheck()
 		L"XXXX-OX",
 		L"CWSX",
 		L"WILBERT-SC",
-		L"XPAMAST-SC"
+		L"XPAMAST-SC" 
 	};
 
 
@@ -460,7 +460,7 @@ BOOL UserNameCheck()
 
 	BOOL Result = FALSE;
 
-
+	
 	GetUserName(infoBuf, &bufCharCount);
 
 
@@ -547,11 +547,11 @@ BOOL CuckooMemoryArtifact(BOOL* found)
 			{
 				exception_ex = TRUE;
 
-				if ((DWORD)actual_addr >= ((DWORD)GetModuleHandleExW & 0xFFFFF000))
+				if ((DWORD)actual_addr >= ((DWORD)GetModuleHandleExW & 0xFFFFF000)) 
 					found_or_endmemory = TRUE;
 				else
 				{
-					Iterator = -1;
+					Iterator = -1; 
 					actual_addr += PAGE_SIZE;
 					actual_addr = (char*)((DWORD)actual_addr & 0xFFFFF000);
 					printf("\b\b\b\b\b\b\b\b\b\b0x%08X", actual_addr);
@@ -573,6 +573,17 @@ int filterExceptionExecuteHandler(int code, PEXCEPTION_POINTERS ex)
 }
 
 
+BOOL JoeBoxDetect(LPCSTR lpProcName)
+{
+	DWORD testval = GetProcessIdentifier(lpProcName);
+
+	HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, TRUE, testval);
+
+	if (hProc)
+		return TRUE;
+	else
+		return FALSE;
+}
 
 
 BOOL AggressiveHyperVCheck()
@@ -580,7 +591,7 @@ BOOL AggressiveHyperVCheck()
 	ULONGLONG tsc1 = 0;
 	ULONGLONG tsc2 = 0;
 	ULONGLONG avg = 0;
-	INT cpuInfo[4] = { NULL };
+	INT cpuInfo[4] = {NULL};
 
 
 	for (int Iterator = 0; Iterator < 10; Iterator++)
@@ -647,6 +658,17 @@ void SandbusterKickStarter(LPCSTR lpProcName, LPCSTR OnlineCheck)
 		printf("\n\n\t[+] No Suspicious Mac Address Related To HybridAnalysis Was Found.");
 
 
+	if (!JoeBoxDetect(L"joeboxserver.exe"))
+	{
+		if (!JoeBoxDetect(L"joeboxcontrol.exe"))
+		{
+			printf("\n\n\t[+] No Joe Sandbox Detected.");
+		}
+	}
+	else
+		printf("\n\n\t[-] Joe Ssandbox Is Present.");
+
+
 
 	if (DetectAltSandbox())
 		printf("\n\n\t[-] Injected Sandbox DLL Detected.");
@@ -673,3 +695,7 @@ void SandbusterKickStarter(LPCSTR lpProcName, LPCSTR OnlineCheck)
 	else
 		printf("\n\n\t[-] Cuckoo Memory Artifact Detected.\n\n");
 }
+
+
+
+
